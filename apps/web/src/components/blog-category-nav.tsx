@@ -8,36 +8,22 @@ interface Category {
   slug: string;
 }
 
-export default function BlogCategoryNav({ active }: { active?: string }) {
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    fetch("/api/categories")
-      .then((res) => res.json())
-      .then((data) => setCategories(data.categories || []));
-  }, []);
-
+export default function BlogCategoryNav({ active, categories }: { active?: string; categories: Category[] }) {
   return (
     <nav className="flex flex-wrap gap-3 mb-12">
       <Link
         href="/blog"
-        className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 hover:scale-105 ${
-          !active 
-            ? "bg-primary text-primary-foreground shadow-md" 
-            : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
-        }`}
+        data-state={!active ? "active" : undefined}
+        className="px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 hover:scale-105 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
       >
         All
       </Link>
       {categories.map((cat) => (
         <Link
           key={cat._id}
-          href={`${cat.slug}`}
-          className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 hover:scale-105 ${
-            active === cat.slug 
-              ? "bg-primary text-primary-foreground shadow-md" 
-              : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
-          }`}
+          href={`/blog/${cat.slug}`}
+          data-state={active === cat.slug ? "active" : undefined}
+          className="px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 hover:scale-105 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           {cat.title}
         </Link>

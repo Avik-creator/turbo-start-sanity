@@ -5,10 +5,11 @@ import { RichText } from "@/components/richtext";
 import { SanityImage } from "@/components/sanity-image";
 import { TableOfContent } from "@/components/table-of-content";
 import { sanityFetch } from "@/lib/sanity/live";
-import { queryBlogSlugPageData, queryCategoryBySlug, queryBlogsByCategorySlug } from "@/lib/sanity/query";
+import { queryBlogSlugPageData, queryCategoryBySlug, queryBlogsByCategorySlug, queryAllCategories } from "@/lib/sanity/query";
 import { getSEOMetadata } from "@/lib/seo";
 import BlogCategoryNav from "@/components/blog-category-nav";
 import { BlogCard } from "@/components/blog-card";
+import { client } from "@/lib/sanity/client";
 
 const PAGE_SIZE = 10;
 
@@ -46,6 +47,8 @@ export default async function BlogSlugOrCategoryPage({
 }) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
+  const categories = await client.fetch(queryAllCategories);
+
   const { slug } = resolvedParams;
   const { data: blog } = await sanityFetch({ query: queryBlogSlugPageData, params: { slug: `/blog/${slug}` } });
   if (blog) {
@@ -75,7 +78,7 @@ export default async function BlogSlugOrCategoryPage({
             <RichText richText={richText ?? []} />
             {/* Category Nav under content */}
             <div className="mt-12 flex justify-center">
-              <BlogCategoryNav />
+              <BlogCategoryNav categories={categories} />
             </div>
           </main>
           <div className="hidden lg:block">
@@ -99,7 +102,7 @@ export default async function BlogSlugOrCategoryPage({
     return (
       <main className="container my-16 mx-auto px-4 md:px-6">
         {/* Category nav at the top */}
-        <BlogCategoryNav active={category.slug} />
+        <BlogCategoryNav active={slug} categories={categories} />
         
         {/* Category header section */}
         <div className="mb-16">

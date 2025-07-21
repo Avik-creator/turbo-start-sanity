@@ -3,11 +3,12 @@ import { notFound } from "next/navigation";
 import { BlogCard, BlogHeader, FeaturedBlogCard } from "@/components/blog-card";
 import { PageBuilder } from "@/components/pagebuilder";
 import { sanityFetch } from "@/lib/sanity/live";
-import { queryBlogIndexPageData } from "@/lib/sanity/query";
+import { queryBlogIndexPageData, queryAllCategories } from "@/lib/sanity/query";
 import { getSEOMetadata } from "@/lib/seo";
 import { handleErrors } from "@/utils";
 import BlogSearchInstantSearch from '@/components/blog-search-instantsearch';
 import BlogCategoryNav from '@/components/blog-category-nav';
+import { client } from "@/lib/sanity/client";
 
 async function fetchBlogPosts() {
   return await handleErrors(sanityFetch({ query: queryBlogIndexPageData }));
@@ -34,6 +35,9 @@ export async function generateMetadata() {
 export default async function BlogIndexPage() {
   const [res, err] = await fetchBlogPosts();
   if (err || !res?.data) notFound();
+
+  // Fetch categories on the server
+  const categories = await client.fetch(queryAllCategories);
 
   const {
     blogs = [],
@@ -94,7 +98,7 @@ export default async function BlogIndexPage() {
         <BlogSearchInstantSearch />
         {/* Category nav */}
         <div className="flex justify-center">
-          <BlogCategoryNav />
+          <BlogCategoryNav categories={categories} />
         </div>
         {/* Featured blogs */}
         {featuredBlogs.length > 0 && (
