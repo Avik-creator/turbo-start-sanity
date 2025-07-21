@@ -13,7 +13,7 @@ const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_SEARCH_KEY);
 function Hit({ hit }: { hit: any }) {
   return (
     <Link
-      href={`/blog/${hit.slug}`}
+      href={`${hit.slug}`}
       className="block px-4 py-3 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors border-b border-gray-100 dark:border-zinc-700 last:border-b-0"
     >
       <div className="font-semibold text-lg">{hit.title}</div>

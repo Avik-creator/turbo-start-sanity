@@ -238,6 +238,55 @@ export const queryBlogPaths = defineQuery(`
   *[_type == "blog" && defined(slug.current)].slug.current
 `);
 
+export const queryAllCategories = defineQuery(`
+  *[_type == "category"] | order(title asc) {
+    _id,
+    title,
+    description,
+    "slug": slug.current,
+    seoTitle,
+    seoDescription,
+    seoImage,
+    seoNoIndex,
+    seoHideFromLists
+  }
+`);
+
+export const queryAllCategorySlugs = defineQuery(`
+  *[_type == "category" && defined(slug.current)]{ "slug": slug.current }
+`);
+
+export const queryBlogsByCategorySlug = defineQuery(`
+  *[_type == "blog" && references(*[_type == 'category' && slug.current == $slug][0]._id)] | order(orderRank asc) {
+    _id,
+    title,
+    description,
+    "slug": slug.current,
+    publishedAt,
+    image,
+    authors[]-> {
+      _id,
+      name,
+      position,
+      image
+    }
+  }
+`);
+
+export const queryCategoryBySlug = defineQuery(`
+  *[_type == "category" && slug.current == $slug][0]{
+    _id,
+    title,
+    description,
+    "slug": slug.current,
+    seoTitle,
+    seoDescription,
+    seoImage,
+    seoNoIndex,
+    seoHideFromLists
+  }
+`);
+
 const ogFieldsFragment = /* groq */ `
   _id,
   _type,

@@ -107,6 +107,19 @@ export const blog = defineType({
       group: GROUP.MAIN_CONTENT,
     }),
     defineField({
+      name: 'categories',
+      type: 'array',
+      title: 'Categories',
+      description: 'Select one or more categories for this blog post',
+      of: [
+        defineArrayMember({
+          type: 'reference',
+          to: [{ type: 'category' }],
+        }),
+      ],
+      group: GROUP.MAIN_CONTENT,
+    }),
+    defineField({
       name: "publishedAt",
       type: "date",
       initialValue: () => new Date().toISOString().split("T")[0],
