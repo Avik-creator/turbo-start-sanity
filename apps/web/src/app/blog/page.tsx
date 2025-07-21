@@ -6,6 +6,7 @@ import { sanityFetch } from "@/lib/sanity/live";
 import { queryBlogIndexPageData } from "@/lib/sanity/query";
 import { getSEOMetadata } from "@/lib/seo";
 import { handleErrors } from "@/utils";
+import BlogSearchInstantSearch from '@/components/blog-search-instantsearch';
 
 async function fetchBlogPosts() {
   return await handleErrors(sanityFetch({ query: queryBlogIndexPageData }));
@@ -78,6 +79,7 @@ export default async function BlogIndexPage() {
     <main className="bg-background">
       <div className="container my-16 mx-auto px-4 md:px-6">
         <BlogHeader title={title} description={description} />
+        <BlogSearchInstantSearch />
 
         {featuredBlogs.length > 0 && (
           <div className="mx-auto mt-8 sm:mt-12 md:mt-16 mb-12 lg:mb-20 grid grid-cols-1 gap-8 md:gap-12">
