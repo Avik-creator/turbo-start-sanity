@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { set, unset } from "sanity";
 import { ObjectInputProps } from "sanity";
 import {
@@ -12,7 +12,8 @@ import {
   Avatar,
   Badge,
 } from "@sanity/ui";
-import { SearchIcon, TrashIcon } from "@sanity/icons";
+import { SearchIcon, TrashIcon, CloseIcon } from "@sanity/icons";
+import { useDebounce } from "use-debounce";
 
 interface Pokemon {
   id: number;
@@ -31,29 +32,24 @@ interface PokemonValue {
 export default function PokemonSelector(props: ObjectInputProps) {
   const { value, onChange } = props;
   const [query, setQuery] = useState("");
+  const [debouncedQuery, { isPending, cancel }] = useDebounce(query, 300);
   const [results, setResults] = useState<Pokemon[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Debounce function
-  const debounce = useCallback((func: Function, delay: number) => {
-    let timeoutId: NodeJS.Timeout;
-    return (...args: any[]) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => func.apply(null, args), delay);
-    };
-  }, []);
+  // Get pending state
+  const isSearchPending = isPending();
 
   // Search function
   const searchPokemon = useCallback(
-    debounce(async (searchQuery: string) => {
+    async (searchQuery: string) => {
       if (!searchQuery.trim()) {
         setResults([]);
         return;
       }
 
       // Skip very short queries to avoid unnecessary API calls
-      if (searchQuery.trim().length < 5) {
+      if (searchQuery.trim().length < 2) {
         setResults([]);
         return;
       }
@@ -127,15 +123,31 @@ export default function PokemonSelector(props: ObjectInputProps) {
       } finally {
         setLoading(false);
       }
-    }, 300),
+    },
     []
   );
+
+  // Effect to trigger search when debouncedQuery changes
+  useEffect(() => {
+    if (debouncedQuery) {
+      searchPokemon(debouncedQuery);
+    } else {
+      setResults([]);
+      setError("");
+    }
+  }, [debouncedQuery, searchPokemon]);
 
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = e.target.value;
     setQuery(newQuery);
-    searchPokemon(newQuery);
+    
+    // Clear previous results and errors when typing
+    if (!newQuery.trim()) {
+      setResults([]);
+      setError("");
+      cancel(); // Cancel any pending debounced calls
+    }
   };
 
   // Handle pokemon selection
@@ -143,12 +155,15 @@ export default function PokemonSelector(props: ObjectInputProps) {
     onChange(set(pokemon));
     setQuery("");
     setResults([]);
+    cancel(); // Cancel any pending searches
   };
 
   // Handle removal
   const handleRemove = () => {
     onChange(unset());
   };
+
+  
 
   return (
     <Card padding={3} radius={2} shadow={1}>
@@ -158,12 +173,20 @@ export default function PokemonSelector(props: ObjectInputProps) {
           <Text size={1} weight="medium">
             Search Pokémon
           </Text>
+          
           <TextInput
             icon={SearchIcon}
             placeholder="Type a Pokémon name (e.g., pikachu, charizard)..."
             value={query}
             onChange={handleInputChange}
           />
+          
+          {/* Status indicators */}
+          {isSearchPending && !loading && (
+            <Text muted size={1}>
+              Waiting to search for "{query}"...
+            </Text>
+          )}
         </Stack>
 
         {/* Loading State */}
@@ -172,7 +195,7 @@ export default function PokemonSelector(props: ObjectInputProps) {
             <Flex align="center" gap={2}>
               <Spinner muted />
               <Text muted size={1}>
-                Searching for Pokémon...
+                Searching for "{debouncedQuery}"...
               </Text>
             </Flex>
           </Card>
@@ -188,6 +211,9 @@ export default function PokemonSelector(props: ObjectInputProps) {
         {/* Search Results */}
         {results.length > 0 && (
           <Stack space={2}>
+            <Text size={1} weight="medium" muted>
+              Search Results
+            </Text>
             {results.map((pokemon) => (
               <Card
                 key={pokemon.id}
@@ -227,6 +253,15 @@ export default function PokemonSelector(props: ObjectInputProps) {
               </Card>
             ))}
           </Stack>
+        )}
+
+        {/* Empty state when query exists but no results and not loading */}
+        {query && !loading && !isSearchPending && results.length === 0 && !error && (
+          <Card padding={3} tone="transparent">
+            <Text muted size={1}>
+              No results found for "{query}". Try a different Pokémon name.
+            </Text>
+          </Card>
         )}
 
         {/* Selected Pokemon Display */}

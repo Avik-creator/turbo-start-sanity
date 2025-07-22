@@ -145,7 +145,7 @@ export default async function BlogIndexPage() {
                   <div className="mt-4">
                     <p className="text-sm font-medium">From blog: {blog.title}</p>
                     <a
-                      href={`/blog${blog.slug}`}
+                      href={`${blog.slug}`}
                       className="text-xs text-primary hover:underline"
                     >
                       Read more →
