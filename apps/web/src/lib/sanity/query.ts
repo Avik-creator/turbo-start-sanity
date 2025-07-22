@@ -46,6 +46,15 @@ const blogAuthorFragment = /* groq */ `
   }
 `;
 
+const pokemonFragment = /* groq */ `
+  pokemon{
+    id,
+    name,
+    types,
+    sprite
+  }
+`;
+
 const blogCardFragment = /* groq */ `
   _type,
   _id,
@@ -56,7 +65,8 @@ const blogCardFragment = /* groq */ `
   orderRank,
   ${imageFragment},
   publishedAt,
-  ${blogAuthorFragment}
+  ${blogAuthorFragment},
+  ${pokemonFragment}
 `;
 
 const buttonsFragment = /* groq */ `
@@ -230,7 +240,8 @@ export const queryBlogSlugPageData = defineQuery(`
     ${blogAuthorFragment},
     ${imageFragment},
     ${richTextFragment},
-    ${pageBuilderFragment}
+    ${pageBuilderFragment},
+    ${pokemonFragment}
   }
 `);
 
@@ -269,7 +280,8 @@ export const queryBlogsByCategorySlug = defineQuery(`
       name,
       position,
       image
-    }
+    },
+    ${pokemonFragment}
   }
 `);
 
