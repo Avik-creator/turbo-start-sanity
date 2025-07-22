@@ -1,6 +1,6 @@
 import { algoliasearch } from 'algoliasearch';
 
-const ALGOLIA_APP_ID = process.env.NEXT_PUBLIC_ALGOLIA_APPLICATION_ID as string;
+const ALGOLIA_APP_ID = process.env.ALGOLIA_APPLICATION_ID as string;
 const ALGOLIA_SEARCH_KEY = process.env.ALGOLIA_SEARCH_ID! 
 const ALGOLIA_INDEX_NAME = process.env.ALGOLIA_INDEX_NAME || 'blog_posts'; // Your index name
 
