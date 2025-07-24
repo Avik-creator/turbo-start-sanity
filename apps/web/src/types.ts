@@ -2,7 +2,10 @@ import type {
   QueryBlogSlugPageDataResult,
   QueryHomePageDataResult,
   QueryImageTypeResult,
+  QueryBlogIndexPageDataResult,
+  QueryCategoryBySlugResult
 } from "./lib/sanity/sanity.types";
+
 
 export type PageBuilderBlockTypes = NonNullable<
   NonNullable<QueryHomePageDataResult>["pageBuilder"]
@@ -32,3 +35,11 @@ export type SanityRichTextBlock = Extract<
 >;
 
 export type Maybe<T> = T | null | undefined;
+
+
+
+export type Blog = NonNullable<
+  NonNullable<QueryBlogIndexPageDataResult>["blogs"]
+>[number];
+
+export type Category = NonNullable<QueryCategoryBySlugResult>;

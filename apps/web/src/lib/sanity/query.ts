@@ -249,6 +249,8 @@ export const queryBlogPaths = defineQuery(`
   *[_type == "blog" && defined(slug.current)].slug.current
 `);
 
+// Blog category page data
+
 export const queryAllCategories = defineQuery(`
   *[_type == "category"] | order(title asc) {
     _id,
@@ -263,9 +265,13 @@ export const queryAllCategories = defineQuery(`
   }
 `);
 
+// To get all category slugs
+
 export const queryAllCategorySlugs = defineQuery(`
   *[_type == "category" && defined(slug.current)]{ "slug": slug.current }
 `);
+
+// To get all blogs by category slug
 
 export const queryBlogsByCategorySlug = defineQuery(`
   *[_type == "blog" && references(*[_type == 'category' && slug.current == $slug][0]._id)] | order(orderRank asc) {
@@ -273,6 +279,11 @@ export const queryBlogsByCategorySlug = defineQuery(`
     title,
     description,
     "slug": slug.current,
+    publishedAt,
+    _type,
+    richText,
+    orderRank,
+    image,
     publishedAt,
     image,
     authors[]-> {
@@ -284,6 +295,8 @@ export const queryBlogsByCategorySlug = defineQuery(`
     ${pokemonFragment}
   }
 `);
+
+// To get a single category by slug
 
 export const queryCategoryBySlug = defineQuery(`
   *[_type == "category" && slug.current == $slug][0]{
@@ -318,6 +331,15 @@ const ogFieldsFragment = /* groq */ `
   "logo": *[_type == "settings"][0].logo.asset->url + "?w=80&h=40&dpr=3&fit=max&q=100",
   "date": coalesce(date, _createdAt)
 `;
+
+export const querySlugType = defineQuery(`
+  *[
+    (slug.current == "/blog/" + $slug && _type == "blog") ||
+    (slug.current == $slug && _type == "category")
+  ][0]{
+    _type
+  }
+`);
 
 export const queryHomePageOGData = defineQuery(`
   *[_type == "homePage" && _id == $id][0]{
