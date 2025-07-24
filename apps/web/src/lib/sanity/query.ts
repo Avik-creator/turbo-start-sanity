@@ -319,6 +319,15 @@ const ogFieldsFragment = /* groq */ `
   "date": coalesce(date, _createdAt)
 `;
 
+export const querySlugType = defineQuery(`
+  *[
+    (slug.current == "/blog/" + $slug && _type == "blog") ||
+    (slug.current == $slug && _type == "category")
+  ][0]{
+    _type
+  }
+`);
+
 export const queryHomePageOGData = defineQuery(`
   *[_type == "homePage" && _id == $id][0]{
     ${ogFieldsFragment}
