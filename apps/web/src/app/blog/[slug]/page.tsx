@@ -14,17 +14,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (slugType?._type === "category") {
     const { data: category } = await sanityFetch({ query: queryCategoryBySlug, params: { slug } });
     return getSEOMetadata({
-      title: category.seoTitle || category.title,
-      description: category.seoDescription || category.description,
-      slug: `/blog/${category.slug}`,
+      title: category?.seoTitle || category?.title,
+      description: category?.seoDescription || category?.description || "",
+      slug: `/blog/${category?.slug}`,
       contentType: "category",
     });
   }else if (slugType?._type === "blog") {
     const { data: blog } = await sanityFetch({ query: queryBlogSlugPageData, params: { slug: `/blog/${slug}` } });
     return getSEOMetadata({
-      title: blog.seoTitle || blog.title,
-      description: blog.seoDescription || blog.description,
-      slug: blog.slug,
+      title: blog?.seoTitle || blog?.title,
+      description: blog?.seoDescription || blog?.description || "",
+      slug: blog?.slug || "",
       contentType: "article",
     });
   }

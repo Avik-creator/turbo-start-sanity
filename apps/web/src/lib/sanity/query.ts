@@ -280,6 +280,11 @@ export const queryBlogsByCategorySlug = defineQuery(`
     description,
     "slug": slug.current,
     publishedAt,
+    _type,
+    richText,
+    orderRank,
+    image,
+    publishedAt,
     image,
     authors[]-> {
       _id,
